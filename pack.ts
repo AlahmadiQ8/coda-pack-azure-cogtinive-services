@@ -1,7 +1,7 @@
 import * as coda from "@codahq/packs-sdk";
-import { getTokenPlaceholder, toSentimentSchema } from "./helpers";
-import { SentimentSchema } from "./schemas";
-import { AnalysisRequest, SentimentResponse } from "./types";
+import { getTokenPlaceholder, toLanguageDetectionSchema, toSentimentSchema } from "./helpers";
+import { LanguageDetectionSchema, SentimentSchema } from "./schemas";
+import { SentimentRequest, LanguageDetectionRequest, LanguageDetectionResponse, SentimentResponse } from "./types";
 
 export const pack = coda.newPack();
 
@@ -37,7 +37,7 @@ pack.addFormula({
       }
     }
 
-    const request: AnalysisRequest = {
+    const request: SentimentRequest = {
       kind: "SentimentAnalysis",
       parameters: {
         modelVersion: 'latest',
@@ -63,6 +63,55 @@ pack.addFormula({
     });
 
     return toSentimentSchema(response.body);
+  }
+})
+
+pack.addFormula({
+  name: "DetectLanguage",
+  description: "Detects the language a given text and returns the language code.",
+  parameters: [
+    coda.makeParameter({
+      type: coda.ParameterType.String,
+      name: "text", 
+      description: "The text to detect its language"
+    })
+  ],
+  resultType: coda.ValueType.Object,
+  schema: LanguageDetectionSchema,
+  execute: async ([text], context) => {
+    if (text?.length < 3) {
+      return {
+        name: 'Unknown',
+        isoName: 'Uknown',
+        confidenceScore: 0
+      }
+    }
+
+    const request: LanguageDetectionRequest = {
+      kind: "LanguageDetection",
+      parameters: {
+        modelVersion: 'latest',
+      },
+      analysisInput: {
+        documents: [ {
+            id: '1',
+            text
+          }
+        ]
+      }
+    };
+
+    let response = await context.fetcher.fetch<LanguageDetectionResponse>({
+      method: 'POST',
+      url: coda.withQueryParams(coda.joinUrl('language', ':analyze-text'), { 'api-version': '2022-05-01' }),
+      headers: {
+        'Ocp-Apim-Subscription-Key': getTokenPlaceholder('key', context),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request)
+    });
+
+    return toLanguageDetectionSchema(response.body);
   }
 })
 

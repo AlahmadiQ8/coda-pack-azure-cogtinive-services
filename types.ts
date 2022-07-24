@@ -1,21 +1,27 @@
-export interface SentimentResponse {
-  kind: string;
-  results: Results;
-}
+export type SentimentResponse = Response<SentimentDocumentResponse>;
+export type LanguageDetectionResponse = Response<LanguageDetectonDocumentResponse>;
+export type SentimentRequest = Request<DocumentRequest & { language: string }>
+export type LanguageDetectionRequest = Request<DocumentRequest>
 
-export interface AnalysisRequest {
+
+interface Request<T> {
   kind:          string;
   parameters:    SentimentParameters;
-  analysisInput: AnalysisInput;
+  analysisInput: AnalysisInput<T>;
 }
 
-interface Results {
-  documents: DocumentResponse[];
+interface Response<T> {
+  kind: string;
+  results: Results<T>;
+}
+
+interface Results<T> {
+  documents: T[];
   errors: any[];
   modelVersion: Date;
 }
 
-interface DocumentResponse {
+interface SentimentDocumentResponse {
   id: string;
   sentiment: string;
   confidenceScores: ConfidenceScores;
@@ -37,14 +43,25 @@ interface Sentence {
   text: string;
 }
 
+interface LanguageDetectonDocumentResponse {
+  id:               string;
+  detectedLanguage: DetectedLanguage;
+  warnings:         any[];
+}
 
-interface AnalysisInput {
-  documents: DocumentRequest[];
+interface DetectedLanguage {
+  name:            string;
+  iso6391Name:     string;
+  confidenceScore: number;
+}
+
+
+interface AnalysisInput<T> {
+  documents: T[];
 }
 
 interface DocumentRequest {
   id:       string;
-  language: string;
   text:     string;
 }
 

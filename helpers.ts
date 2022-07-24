@@ -1,6 +1,6 @@
 import * as coda from "@codahq/packs-sdk";
 
-import { SentimentResponse } from "./types";
+import { LanguageDetectionResponse, SentimentResponse } from "./types";
 
 export const toSentimentSchema = (sentimentResponse: SentimentResponse) => {
   const document = sentimentResponse.results.documents[0];
@@ -9,6 +9,15 @@ export const toSentimentSchema = (sentimentResponse: SentimentResponse) => {
     positiveScore: document.confidenceScores.positive,
     neutralScore: document.confidenceScores.neutral,
     negativeScore: document.confidenceScores.negative,
+  }
+}
+
+export const toLanguageDetectionSchema = (languageDetectionResponse: LanguageDetectionResponse) => {
+  const document = languageDetectionResponse.results.documents[0];
+  return {
+    name: document.detectedLanguage.name,
+    isoName: document.detectedLanguage.iso6391Name,
+    confidenceScore: document.detectedLanguage.confidenceScore
   }
 }
 
