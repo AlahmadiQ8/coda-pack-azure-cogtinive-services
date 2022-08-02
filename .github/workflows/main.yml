@@ -1,0 +1,13 @@
+on: [push]
+
+jobs:
+  hello_world_job:
+    runs-on: ubuntu-latest
+    name: Testing my action
+    steps:
+      - name: Hello world action step
+        id: hello
+        uses: AlahmadiQ8/coda-pack-deploy@v0.0.1
+        with:
+          path-to-pack-dot-ts: 'omg omg'
+          coda-api-token: 'yeah'
