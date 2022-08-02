@@ -7,7 +7,7 @@ jobs:
     steps:
       - name: Hello world action step
         id: hello
-        uses: AlahmadiQ8/coda-pack-deploy@v0.0.1
+        uses: AlahmadiQ8/coda-pack-deploy@v0.0.2
         with:
           path-to-pack-dot-ts: 'omg omg'
           coda-api-token: 'yeah'
